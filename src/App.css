@@ -69,17 +69,22 @@
 }
 
 
-.ant-card-cover {
-  min-height: 206px !important;
-}
-
 .card-title {
   display: flex;
   justify-content: space-between;
 }
 
-.ant-card-cover > img {
+.ant-card-cover {
   padding: 12px !important;
+  height: 164px;
+  overflow: hidden;
+}
+
+.ant-card-cover > img {
+  object-fit: cover;
+  width: 100%;
+  border-radius: 12px !important;
+  height: 100%;
 }
 
 .ant-card-body {
