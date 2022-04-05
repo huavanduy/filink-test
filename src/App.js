@@ -86,7 +86,7 @@ function App() {
       <>
         <div className="filter">
           <div className="filter-1">
-            Name:{" "}
+            <p>Name:{" "}</p>
             <Input
               onChange={(e) => {
                 setFilter({
@@ -95,7 +95,7 @@ function App() {
                 });
               }}
             />
-            Symbol:{" "}
+            <p>Symbol:{" "}</p>
             <Input
               onChange={(e) => {
                 setFilter({
@@ -104,7 +104,7 @@ function App() {
                 });
               }}
             />
-            Status:{" "}
+            <p>Status:{" "}</p>
             <Input
               onChange={(e) => {
                 setFilter({
@@ -116,7 +116,7 @@ function App() {
           </div>
           <div className="filter-2">
             <div className="range">
-              Total Raise:
+              <p>Total Raise:</p>
               <Slider
                 range={{ draggableTrack: true }}
                 defaultValue={[20, 50]}
@@ -138,7 +138,7 @@ function App() {
               </Button>
             </div>
             <div className="range">
-              Personal Allocation:
+              <p>Personal Allocation:</p>
               <Slider
                 range={{ draggableTrack: true }}
                 value={filter.personalAllocation}

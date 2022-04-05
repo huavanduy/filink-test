@@ -169,9 +169,9 @@
 }
 
 .range {
+  padding-top: 10px;
   display: flex;
-  margin: 10px 0;
-  justify-content: space-around;
+  margin: 0 20px;
 }
 
 .ant-slider {
@@ -214,4 +214,8 @@
 
 .load-more {
   margin-top: 50px;
+}
+
+.range > p {
+  width: 200px;
 }
