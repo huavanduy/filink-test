@@ -2,6 +2,7 @@ import "./App.css";
 import { Col, Row, Card, Input, Slider, Button } from "antd";
 import React from "react";
 import { loadDataApi } from "./axios/fundedApi";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 // name, symbol, status, 2 slider totalRaise và personalAllocation
 
@@ -9,7 +10,7 @@ function App() {
   const { Meta } = Card;
   const [filter, setFilter] = React.useState({
     page: 1,
-    pageSize: 8,
+    pageSize: 5,
   });
   const [currentPage, setCurrentPage] = React.useState(1);
 
@@ -21,7 +22,6 @@ function App() {
       setDataRender(data.data.fundProjects);
     }
   };
-
 
   React.useEffect(() => {
     loadData();
@@ -52,7 +52,7 @@ function App() {
   const handleClear = async () => {
     const clearFilter = {
       page: 1,
-      pageSize: 8,
+      pageSize: 5,
     };
     const { data } = await loadDataApi(clearFilter);
     if (data.statusCode === 1) {
@@ -73,7 +73,7 @@ function App() {
     const oldData = dataRender;
     setCurrentPage(page + 1);
     const { data } = await loadDataApi({
-      pageSize: 8,
+      pageSize: 5,
       page: currentPage,
     });
     if (data.statusCode === 1) {
@@ -86,7 +86,7 @@ function App() {
       <>
         <div className="filter">
           <div className="filter-1">
-            <p>Name:{" "}</p>
+            <p>Name: </p>
             <Input
               onChange={(e) => {
                 setFilter({
@@ -95,7 +95,7 @@ function App() {
                 });
               }}
             />
-            <p>Symbol:{" "}</p>
+            <p>Symbol: </p>
             <Input
               onChange={(e) => {
                 setFilter({
@@ -104,7 +104,7 @@ function App() {
                 });
               }}
             />
-            <p>Status:{" "}</p>
+            <p>Status: </p>
             <Input
               onChange={(e) => {
                 setFilter({
@@ -207,33 +207,37 @@ function App() {
         </div>
         {renderTotal()}
         {renderFilter()}
-        <Row gutter={[32, 32]}>
-          {dataRender != []
-            ? dataRender.map((item, index) => {
-                return (
-                  <Col xl={6} md={12} xs={24} key={index}>
-                    <Card
-                      hoverable
-                      cover={<img alt="example" src={item.coverPhoto} />}
-                    >
-                      <Meta
-                        title={renderTitleCart(item)}
-                        description="IDO starts on October 14th 2021"
-                      />
-                    </Card>
-                  </Col>
-                );
-              })
-            : ""}
-        </Row>
-        <Button
-          className="load-more"
-          onClick={() => {
-            loadMore();
-          }}
+        <InfiniteScroll
+          dataLength={dataRender.length}
+          next={loadMore}
+          hasMore={true}
+          loader={<h4>Loading...</h4>}
+          endMessage={
+            <p style={{ textAlign: "center" }}>
+              <b>Yay! You have seen it all</b>
+            </p>
+          }
         >
-          Load More
-        </Button>
+          <Row gutter={[32, 32]}>
+            {dataRender != []
+              ? dataRender.map((item, index) => {
+                  return (
+                    <Col xl={6} md={12} xs={24} key={index}>
+                      <Card
+                        hoverable
+                        cover={<img alt="example" src={item.coverPhoto} />}
+                      >
+                        <Meta
+                          title={renderTitleCart(item)}
+                          description="IDO starts on October 14th 2021"
+                        />
+                      </Card>
+                    </Col>
+                  );
+                })
+              : ""}
+          </Row>
+        </InfiniteScroll>
       </div>
     </div>
   );

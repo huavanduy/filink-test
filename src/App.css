@@ -6,6 +6,10 @@
     #414141;
 }
 
+.infinite-scroll-component {
+  overflow: hidden;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -67,7 +71,6 @@
   border-radius: 12px;
   border: none !important;
 }
-
 
 .card-title {
   display: flex;
