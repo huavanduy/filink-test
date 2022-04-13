@@ -53,7 +53,7 @@ function App() {
       totalEth += listTransactions[i].value.toString() / Math.pow(10, 18);
     }
     setAvgOfEth((totalEth / listTransactions.length).toFixed(2));
-    setTransactions(transactions);
+    setTransactions(listTransactions);
     setAvgOftime(total / temp);
     setLoading(false);
   };
