@@ -1,20 +1,62 @@
 import "./App.css";
-import { Col, Row, Card, Input, Slider, Button } from "antd";
+import { Col, Row, Card, Input, Slider, Button, Spin } from "antd";
 import React from "react";
 import { loadDataApi } from "./axios/fundedApi";
 import InfiniteScroll from "react-infinite-scroll-component";
-
-// name, symbol, status, 2 slider totalRaise và personalAllocation
+import { ethers } from "ethers";
 
 function App() {
   const { Meta } = Card;
+  const PROVIDER =
+    "https://rinkeby.infura.io/v3/e5b97339938341618b45e7e0d7e7d225";
   const [filter, setFilter] = React.useState({
     page: 1,
     pageSize: 5,
   });
   const [currentPage, setCurrentPage] = React.useState(1);
-
   const [dataRender, setDataRender] = React.useState([]);
+  const [transactions, setTransactions] = React.useState([]);
+  const [avgOftime, setAvgOftime] = React.useState(0);
+  const [avgOfEth, setAvgOfEth] = React.useState(0);
+  const [loading, setLoading] = React.useState(false);
+
+  const getTransaction = async () => {
+    setLoading(true);
+    const provider = new ethers.providers.JsonRpcProvider(PROVIDER);
+    const MIN_BLOCK_NUMBER = 10441830;
+    const MAX_BLOCK_NUMBER = 10441840;
+    const listTransactions = [];
+    const timeStamp = [];
+    for (
+      var BLOCK_NUMBER = MIN_BLOCK_NUMBER;
+      BLOCK_NUMBER <= MAX_BLOCK_NUMBER;
+      BLOCK_NUMBER++
+    ) {
+      const result = await provider.getBlockWithTransactions(BLOCK_NUMBER);
+      console.log(result);
+      timeStamp.push(result.timestamp);
+      result.transactions.map((item) => {
+        listTransactions.push(item);
+      });
+    }
+    let timeStampReverse = timeStamp.reverse();
+    var total = 0;
+    var temp = 0;
+    var totalEth = 0;
+    for (var i = 0; i < timeStampReverse.length - 1; i++) {
+      var step = timeStampReverse[i] - timeStampReverse[i + 1];
+      total += step;
+      temp++;
+      console.log(total);
+    }
+    for (var i = 0; i < listTransactions.length; i++) {
+      totalEth += listTransactions[i].value.toString() / Math.pow(10, 18);
+    }
+    setAvgOfEth((totalEth / listTransactions.length).toFixed(2));
+    setTransactions(transactions);
+    setAvgOftime(total / temp);
+    setLoading(false);
+  };
 
   const loadData = async () => {
     const { data } = await loadDataApi(filter);
@@ -25,6 +67,7 @@ function App() {
 
   React.useEffect(() => {
     loadData();
+    getTransaction();
   }, []);
 
   const renderTitleCart = (item) => {
@@ -164,35 +207,37 @@ function App() {
     return (
       <>
         <div className="total">
-          <Row gutter={[16, 16]}>
-            <Col xl={8} md={12} xs={24}>
-              <div className="content-total">
-                <div className="content">
-                  <img src="https://i.ibb.co/0MN8m0v/Coin.png" />
-                  <p style={{ color: "#F0D042" }}>Total transactions:</p>
+          <Spin spinning={loading} size="large">
+            <Row gutter={[16, 16]}>
+              <Col xl={8} md={12} xs={24}>
+                <div className="content-total">
+                  <div className="content">
+                    <img src="https://i.ibb.co/0MN8m0v/Coin.png" />
+                    <p style={{ color: "#F0D042" }}>Total transactions:</p>
+                  </div>
+                  <div className="value">{transactions.length}</div>
                 </div>
-                <div className="value">79</div>
-              </div>
-            </Col>
-            <Col xl={8} md={12} xs={24}>
-              <div className="content-total">
-                <div className="content">
-                  <img src="https://i.ibb.co/0MN8m0v/Coin.png" />
-                  <p style={{ color: "#31B4D9" }}>AVG of block time:</p>
+              </Col>
+              <Col xl={8} md={12} xs={24}>
+                <div className="content-total">
+                  <div className="content">
+                    <img src="https://i.ibb.co/0MN8m0v/Coin.png" />
+                    <p style={{ color: "#31B4D9" }}>AVG of block time:</p>
+                  </div>
+                  <div className="value">{avgOftime}</div>
                 </div>
-                <div className="value">19.455</div>
-              </div>
-            </Col>
-            <Col xl={8} md={12} xs={24}>
-              <div className="content-total">
-                <div className="content">
-                  <img src="https://i.ibb.co/0MN8m0v/Coin.png" />
-                  <p style={{ color: "#1F8B24" }}>AVG of ETH/transactions</p>
+              </Col>
+              <Col xl={8} md={12} xs={24}>
+                <div className="content-total">
+                  <div className="content">
+                    <img src="https://i.ibb.co/0MN8m0v/Coin.png" />
+                    <p style={{ color: "#1F8B24" }}>AVG of ETH/transactions</p>
+                  </div>
+                  <div className="value">{avgOfEth} ETH</div>
                 </div>
-                <div className="value">1.10 ETH</div>
-              </div>
-            </Col>
-          </Row>
+              </Col>
+            </Row>
+          </Spin>
         </div>
       </>
     );
